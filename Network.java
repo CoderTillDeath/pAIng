@@ -174,6 +174,6 @@ class Network
 	
 	public static double randomWeight()
 	{
-		return Math.random() * 20 - 10;
+		return Math.random() * 2 - 1;
 	}
 }
