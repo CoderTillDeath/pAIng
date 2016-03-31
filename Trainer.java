@@ -42,7 +42,7 @@ class Trainer
 						if(!matches.get(m).over())
 							matches.get(m).update();
 					long end = System.currentTimeMillis();
-					if(end - begin < 10 && gen > 8)
+					if(end - begin < 10 && gen > 100)
 					{
 						try{Thread.sleep(10 - (int)(end - begin));}catch(InterruptedException e){e.printStackTrace();}
 					}
@@ -171,7 +171,7 @@ class Trainer
 	public void initializeNetworks()
 	{
 		networks = new ArrayList<Network>();
-		for(int x = 0; x < 60; x++)
+		for(int x = 0; x < 120; x++)
 		{
 			networks.add(new Network());
 		}
