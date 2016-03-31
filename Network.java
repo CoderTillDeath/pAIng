@@ -11,7 +11,7 @@ class Network
 	
 	public Network()
 	{
-		theta1 = new double[numFeatures][numFeatures];
+		theta1 = new double[numFeatures+1][numFeatures];
 		
 		for(int x = 0; x < theta1.length; x++)
 		{
@@ -21,7 +21,7 @@ class Network
 			}
 		}
 		
-		theta2 = new double[numFeatures][3];
+		theta2 = new double[numFeatures+1][3];
 		
 		for(int x = 0; x < theta2.length; x++)
 		{
@@ -57,17 +57,18 @@ class Network
 	
 	public void propagate(boolean layer2)
 	{
-		double[] X = new double[numFeatures];
-			X[0] = p.b.x/p.length;
-			X[1] = (p.b.y - control.y)/ p.height;
-			X[2] = (p.b.y - notControl.y)/ p.height;
-			X[3] = (p.b.speed - 3)/2;
-			X[4] = Math.cos(p.b.angle);
-			X[5] = Math.sin(p.b.angle);
+		double[] X = new double[numFeatures+1];
+			X[0] = 1;
+			X[1] = p.b.x/p.length;
+			X[2] = (p.b.y - control.y)/ p.height;
+			X[3] = (p.b.y - notControl.y)/ p.height;
+			X[4] = (p.b.speed - 3)/2;
+			X[5] = Math.cos(p.b.angle);
+			X[6] = Math.sin(p.b.angle);
 		double[] result = null;
 		
 		if(layer2)
-			result = sigmoid(multiply(sigmoid(multiply(X,theta1)), theta2));
+			result = sigmoid(multiply(addBias(sigmoid(multiply(X,theta1))), theta2));
 		else
 			result = sigmoid(multiply(X,theta2));
 			
@@ -117,6 +118,20 @@ class Network
 		return product;
 	}
 	
+	public double[] addBias(double[] a)
+	{
+		double[] b = new double[a.length];
+		b[0] = 1;
+		
+		for(int x = 1; x < a.length; x++)
+		{
+			b[x] = a[x-1];
+		}
+		
+		return b;
+		
+	}
+	
 	public static Network merge(Network n1, Network n2)
 	{
 		Network child = new Network();
@@ -159,6 +174,6 @@ class Network
 	
 	public static double randomWeight()
 	{
-		return Math.random() * 2 - 1;
+		return Math.random() * 20 - 10;
 	}
 }
