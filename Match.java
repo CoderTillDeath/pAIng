@@ -27,7 +27,7 @@ class Match
 	public void update()
 	{
 		p.update();
-		p1.propagate(false);
-		p2.propagate(false);
+		p1.propagate(true);
+		p2.propagate(true);
 	}
 }
