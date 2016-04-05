@@ -1,34 +1,26 @@
+import java.util.ArrayList;
 
 class Network
 {
-	double[][] theta1, theta2;
 	Pong p;
 	Paddle control;
 	Paddle notControl;
 	boolean lost;
 	int collide;
 	int numFeatures = 6;
+	ArrayList<NodeLayer> layers;
 	
 	public Network()
 	{
-		theta1 = new double[numFeatures+1][numFeatures];
-		
-		for(int x = 0; x < theta1.length; x++)
+		layers = new ArrayList<NodeLayer>();
+	}
+	
+	public Network(int[] nodes)
+	{
+		layers = new ArrayList<NodeLayer>();
+		for(int x = 0; x < nodes.length - 1; x++)
 		{
-			for(int y = 0; y < theta1[x].length; y++)
-			{
-				theta1[x][y] = randomWeight();
-			}
-		}
-		
-		theta2 = new double[numFeatures+1][3];
-		
-		for(int x = 0; x < theta2.length; x++)
-		{
-			for(int y = 0; y < theta2[x].length; y++)
-			{
-				theta2[x][y] = randomWeight();
-			}
+			layers.add(new NodeLayer(nodes[x] + 1, nodes[x+1]));
 		}
 	}
 	
@@ -57,110 +49,63 @@ class Network
 	
 	public void propagate(boolean layer2)
 	{
-		double[] X = new double[numFeatures+1];
-			X[0] = 1;
-			X[1] = p.b.x/p.length;
-			X[2] = (p.b.y - control.y)/ p.height;
-			X[3] = (p.b.y - notControl.y)/ p.height;
-			X[4] = (p.b.speed - 3)/2;
-			X[5] = Math.cos(p.b.angle);
-			X[6] = Math.sin(p.b.angle);
-		double[] result = null;
+		double[][] X = new double[1][numFeatures+1];
+			X[0][0] = 1;
+			X[0][1] = p.b.x/p.length;
+			X[0][2] = (p.b.y - control.y)/ p.height;
+			X[0][3] = (p.b.y - notControl.y)/ p.height;
+			X[0][4] = (p.b.speed - 3)/2;
+			X[0][5] = Math.cos(p.b.angle);
+			X[0][6] = Math.sin(p.b.angle);
+		double[][] result = X;
 		
-		if(layer2)
-			result = sigmoid(multiply(addBias(sigmoid(multiply(X,theta1))), theta2));
-		else
-			result = sigmoid(multiply(X,theta2));
-			
-		int greatest = 0;
-		
-		for(int x = 0; x < result.length; x++)
+		for(int x = 0; x < layers.size(); x++)
 		{
-			if(result[greatest] < result[x])
+			result = layers.get(x).propagateSigBias(result);
+		}
+			
+		int greatest = 1;
+		
+		for(int x = 1; x < result[0].length; x++)
+		{
+			if(result[0][greatest] < result[0][x])
 				greatest = x;
 		}
 		
 		switch(greatest)
 		{
-			case 0:	control.moveUp();
+			case 1:	control.moveUp();
 					break;
-			case 1:	control.moveDown();
+			case 2:	control.moveDown();
 					break;
-			case 2:	control.notMoving();
+			case 3:	control.notMoving();
 					break;
 		}
-	}
-	
-	public double[] sigmoid(double[] z)
-	{
-		for(int x = 0; x < z.length; x++)
-		{
-			z[x] = 1 / (1 + Math.pow(Math.E, -z[x]));
-		}
-		
-		return z;
-	}
-	
-	public double[] multiply(double[] X, double[][] theta)
-	{
-		double[] product = new double[theta[0].length];
-		
-		for(int i = 0; i < product.length; i++)
-		{
-			double sum = 0;
-			for(int j = 0; j < theta[i].length; j++)
-			{
-				sum += X[i] * theta[i][j];
-			}
-			product[i] = sum;
-		}
-		
-		return product;
-	}
-	
-	public double[] addBias(double[] a)
-	{
-		double[] b = new double[a.length];
-		b[0] = 1;
-		
-		for(int x = 1; x < a.length; x++)
-		{
-			b[x] = a[x-1];
-		}
-		
-		return b;
-		
 	}
 	
 	public static Network merge(Network n1, Network n2)
 	{
 		Network child = new Network();
 		
-		for(int x = 0; x < child.theta1.length; x++)
-		{
-			for(int y = 0; y < child.theta1[x].length; y++)
-			{
-				double mutate = Math.random();
-				if(mutate > .05)
-					child.theta1[x][y] = ((int)(Math.random() * 2) == 0)?n1.theta1[x][y]:n2.theta1[x][y];
-				else
-					child.theta1[x][y] = randomWeight();
-			}
-		}
-		
-		for(int x = 0; x < child.theta2.length; x++)
-		{
-			for(int y = 0; y < child.theta2[x].length; y++)
-			{
-				double mutate = Math.random();
-				if(mutate > .05)
-					child.theta2[x][y] = ((int)(Math.random() * 2) == 0)?n1.theta2[x][y]:n2.theta2[x][y];
-				else
-					child.theta2[x][y] = randomWeight();
-			}
-		}
+		for(int x = 0; x < n1.numLayers(); x++)
+			child.addLayer(NodeLayer.merge(n1.getLayer(x), n2.getLayer(x)));
 		
 		return child;
+	}
+	
+	public void addLayer(NodeLayer n)
+	{
+		layers.add(n);
+	}
+	
+	public int numLayers()
+	{
+		return layers.size();
+	}
+	
+	public NodeLayer getLayer(int x)
+	{
+		return layers.get(x);
 	}
 	
 	public void printArr(double[] arr)
@@ -174,6 +119,6 @@ class Network
 	
 	public static double randomWeight()
 	{
-		return Math.random() * 2 - 1;
+		return Math.random();
 	}
 }
