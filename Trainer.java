@@ -17,7 +17,8 @@ class Trainer
 	{
 		long gen = 1;
 		ArrayList<Match> matches = new ArrayList<Match>();
-		int MATCHES_PER_BATCH = 6;
+		int MATCHES_PER_BATCH = 1;
+		int delay = 10;
 		
 		
 		while(training)
@@ -26,7 +27,7 @@ class Trainer
 			System.out.println("Generation: " + gen);
 			for(int x = 0; x < networks.size(); x += MATCHES_PER_BATCH)
 			{
-				System.out.println("Match: " + x/2);
+				System.out.println("Match: " + x);
 				matches.clear();
 				
 				for(int m = 0; m < MATCHES_PER_BATCH; m++)
@@ -42,9 +43,9 @@ class Trainer
 						if(!matches.get(m).over())
 							matches.get(m).update();
 					long end = System.currentTimeMillis();
-					if(end - begin < 10 && gen > 100)
+					if(end - begin < delay && gen>10)
 					{
-						try{Thread.sleep(10 - (int)(end - begin));}catch(InterruptedException e){e.printStackTrace();}
+						try{Thread.sleep(delay - (int)(end - begin));}catch(InterruptedException e){e.printStackTrace();}
 					}
 					
 					if(System.currentTimeMillis() - trueBegin > 5000)
@@ -83,7 +84,7 @@ class Trainer
 	{
 		long gen = 1;
 		ArrayList<Match> matches = new ArrayList<Match>();
-		int MATCHES_PER_BATCH = 6;
+		int MATCHES_PER_BATCH = 1;
 		
 		
 		while(training)
@@ -162,7 +163,7 @@ class Trainer
 			Network n1 = (a.collide > b.collide)?a:(a.collide<b.collide)?b:(!a.lost)?a:b;
 			Network n2 = (c.collide > d.collide)?c:(c.collide<d.collide)?d:(!c.lost)?c:d;
 			
-			children.add(Network.merge(n2, n2));
+			children.add(Network.merge(n1, n2));
 		}
 		
 		networks = children;
@@ -173,11 +174,28 @@ class Trainer
 		networks = new ArrayList<Network>();
 		for(int x = 0; x < 120; x++)
 		{
-			networks.add(new Network());
+			networks.add(new Network(new int[]{6,3}));
 		}
 	}
 	
 	
+	
+	public static void printArr(double[] arr)
+	{
+		for(int x = 0; x < arr.length; x++)
+			System.out.print(arr[x] + " ");
+		System.out.println();
+	}
+	
+	public static void printArr(double[][] arr)
+	{
+		for(int x = 0; x < arr.length; x++)
+		{
+			for(int y = 0; y < arr[x].length; y++)
+				System.out.print(arr[x][y] + " ");
+			System.out.println();
+		}
+	}
 	
 	public static void main(String[] args)
 	{
