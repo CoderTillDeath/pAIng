@@ -16,6 +16,12 @@ public class LinTrans
 	}
     }
 
+    // Test build
+    public LinTrans(double[][] theta)
+    {
+	this.theta = theta;
+    }
+
     public LinTrans(int inputs, int outputs)
     {
 	theta = new double[inputs][outputs];
@@ -30,6 +36,11 @@ public class LinTrans
     public double[][] transSigBias (double[][] input)
     {
 	return addBias(sigmoid(transform(input)));
+    }
+
+    public double[][] transSig(double[][] input)
+    {
+	return sigmoid(transform(input));
     }
 
     public double[][] transform(double[][] input)

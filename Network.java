@@ -22,6 +22,15 @@ public class Network {
 	}
     }
 
+    public Network(ArrayList<double[][]> thetas)
+    {
+	transformations = new ArrayList<LinTrans>();
+	
+	for (int i = 0; i < thetas.size(); i++) {
+	    transformations.add(new LinTrans(thetas.get(i)));
+	}
+    }
+
     public double[][] propagate (double[][] inputs)
     {
 	double[][] result = inputs;
@@ -33,10 +42,31 @@ public class Network {
 	return result;
     }
 
+    public double[][] propagateWithoutBias(double[][] inputs)
+    {
+	double[][] result = inputs;
+
+	for (int i = 0; i < transformations.size(); i++) {
+	    result = transformations.get(i).transSig(result);
+	}
+
+	return result;
+    }
+
     public static void main(String[] args)
     {
+	/*
 	Network n = new Network(new int[]{2,3,4}, true);
 
-	System.out.println(Arrays.deepToString(n.propagate(new double[][]{{1,2,-1}})));
+	System.out.println(Arrays.deepToString(n.propagate(new double[][]{{1,2,-1}})));*/
+
+	ArrayList<double[][]> arr = new ArrayList<>();
+
+	arr.add(new double[][]{{.1,.5},{.9,.8}});
+	arr.add(new double[][]{{.7},{.5}});
+
+	Network n = new Network(arr);
+
+	System.out.println(Arrays.deepToString(n.propagateWithoutBias(new double[][]{{.2,.4}})));
     }
 }
