@@ -55,18 +55,20 @@ public class Network {
 
     public static void main(String[] args)
     {
+	
+	Network n = new Network(new int[]{2,3,2}, true);
+
+	System.out.println(Arrays.deepToString(n.propagate(new double[][]{{1,2,-1}})));
+
 	/*
-	Network n = new Network(new int[]{2,3,4}, true);
-
-	System.out.println(Arrays.deepToString(n.propagate(new double[][]{{1,2,-1}})));*/
-
 	ArrayList<double[][]> arr = new ArrayList<>();
 
 	arr.add(new double[][]{{.1,.5},{.9,.8}});
-	arr.add(new double[][]{{.7},{.5}});
 
 	Network n = new Network(arr);
 
-	System.out.println(Arrays.deepToString(n.propagateWithoutBias(new double[][]{{.2,.4}})));
+	System.out.println(Arrays.deepToString(n.propagateWithoutBias(new double[][]{{.2,.4}})));*/
+
+	
     }
 }
