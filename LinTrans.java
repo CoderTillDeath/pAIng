@@ -48,8 +48,6 @@ public class LinTrans
 	if(input[0].length != theta.length)
 	    throw new ArithmeticException();
 
-	System.out.println(Arrays.deepToString(input));
-	System.out.println(Arrays.deepToString(theta));
 
 	double[][] result = new double[input.length][theta[0].length];
 
@@ -95,8 +93,6 @@ public class LinTrans
 	    result[i][0] = 1;
 	}
 
-	System.out.println(Arrays.deepToString(result));
-	System.out.println();
 
 	return result;
     }
