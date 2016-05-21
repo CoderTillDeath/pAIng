@@ -20,7 +20,7 @@ public class Matrix
 	{
 	    arr = new double[m1.rows()][m1.columns() + m2.columns()];
 	    
-	    if(m1.rows() != m2.rows()) throw new ArithmeticException();
+	    if(m1.rows() != m2.rows()) throw new ArithmeticException(dimensionCompare(m1,m2));
 
 	    for (int r = 0; r < m1.rows(); r++) {
 		for (int c = 0; c < m1.columns(); c++) {
@@ -37,7 +37,7 @@ public class Matrix
 	else
 	{
 	    arr = new double[m1.rows() + m2.rows()][m1.columns()];
-	    if(m1.columns() != m2.columns()) throw new ArithmeticException();
+	    if(m1.columns() != m2.columns()) throw new ArithmeticException(dimensionCompare(m1,m2));
 
 	    for (int r = 0; r < m1.rows(); r++) {
 		for (int c = 0; c < m1.columns(); c++) {
@@ -108,6 +108,19 @@ public class Matrix
 	return new Matrix(mat);
     }
 
+    public Matrix transpose()
+    {
+	Matrix m = new Matrix(columns(),rows());
+
+	for (int r = 0; r < m.rows(); r++) {
+	    for (int c = 0; c < m.columns(); c++) {
+		m.set(r,c,get(c,r));
+	    }
+	}
+
+	return m;
+    }
+
     public static Matrix ones(int rows, int columns)
     {
 	Matrix res = new Matrix(rows,columns);
@@ -123,7 +136,7 @@ public class Matrix
 
     public static Matrix crossProduct(Matrix a1, Matrix a2)
     {
-	if(a1.columns() != a2.rows()) throw new ArithmeticException();
+	if(a1.columns() != a2.rows()) throw new ArithmeticException(dimensionCompare(a1,a2));
 
 	Matrix res = new Matrix(a1.rows(), a2.columns());
 
@@ -144,7 +157,7 @@ public class Matrix
 
     public static Matrix add(Matrix a1, Matrix a2)
     {
-	if(a1.columns() != a2.columns() || a1.rows() != a2.rows()) throw new ArithmeticException();
+	if(a1.columns() != a2.columns() || a1.rows() != a2.rows()) throw new ArithmeticException(dimensionCompare(a1,a2));
 
 	Matrix res = new Matrix(a1.rows(),a1.columns());
 
@@ -157,6 +170,19 @@ public class Matrix
 	return res;
     }
 
+    public static Matrix sub(int a, Matrix b)
+    {
+	Matrix res = new Matrix(b.rows(),b.columns());
+
+	for (int r = 0; r < res.rows(); r++) {
+	    for (int c = 0; c < res.columns(); c++) {
+		res.set(r,c,a - b.get(r,c));
+	    }
+	}
+
+	return res;
+    }
+    
     public static Matrix scale(Matrix a1, int s)
     {
 	Matrix res = new Matrix(a1.rows(), a1.columns());
@@ -177,7 +203,7 @@ public class Matrix
 
     public static Matrix mult(Matrix a1, Matrix a2)
     {
-	if(a1.columns() != a2.columns() || a1.rows() != a2.rows()) throw new ArithmeticException();
+	if(a1.columns() != a2.columns() || a1.rows() != a2.rows()) throw new ArithmeticException(dimensionCompare(a1,a2));
 
 	Matrix res = new Matrix(a1.rows(),a1.columns());
 	
@@ -188,6 +214,11 @@ public class Matrix
 	}
 
 	return res;
+    }
+
+    public static String dimensionCompare(Matrix a1, Matrix a2)
+    {
+	return "Arg 1: " + a1.rows() + "x" + a1.columns() + ", Arg 2: " + a2.rows() + "x" + a2.columns();
     }
 
     public String toString() {
