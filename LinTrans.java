@@ -2,16 +2,16 @@ import java.util.Arrays;
 
 public class LinTrans
 {
-    double[][] theta;
+    Matrix theta;
 
     // Test
     public LinTrans(int inputs, int outputs, boolean b)
     {
-	theta = new double[inputs][outputs];
+	theta = new Matrix(inputs,outputs);
 
-	for(int r = 0; r < theta.length; r++) {
-	    for(int c = 0; c < theta[r].length; c++) {
-		theta[r][c] = ((r+c)%2 == 0)?1:-1;
+	for(int r = 0; r < theta.rows(); r++) {
+	    for(int c = 0; c < theta.columns(); c++) {
+		theta.set(r,c,((r+c)%2 == 0)?1:-1);
 	    }
 	}
     }
@@ -19,80 +19,56 @@ public class LinTrans
     // Test build
     public LinTrans(double[][] theta)
     {
-	this.theta = theta;
+	this.theta = new Matrix(theta);
     }
 
     public LinTrans(int inputs, int outputs)
     {
-	theta = new double[inputs][outputs];
+	theta = new Matrix(inputs,outputs);
 
-	for (int r = 0; r < theta.length; r++) {
-	    for (int c = 0; c < theta[r].length; c++) {
-		theta[r][c] = randomWeight();
+	for (int r = 0; r < theta.rows(); r++) {
+	    for (int c = 0; c < theta.columns(); c++) {
+		theta.set(r,c,randomWeight());
 	    }
 	}
     }
     
-    public double[][] transSigBias (double[][] input)
+    public Matrix transSigBias (Matrix input)
     {
 	return addBias(sigmoid(transform(input)));
     }
 
-    public double[][] transSig(double[][] input)
+    public Matrix transSig(Matrix input)
     {
 	return sigmoid(transform(input));
     }
 
-    public double[][] transform(double[][] input)
+    public Matrix transform(Matrix input)
     {
-	if(input[0].length != theta.length)
+	if(input.columns() != theta.rows())
 	    throw new ArithmeticException();
 
-
-	double[][] result = new double[input.length][theta[0].length];
-
-	for(int r = 0; r < result.length; r++) {
-	    for(int c = 0; c < result[r].length; c++) {
-		double sum = 0;
-		
-		for(int s = 0; s < input[0].length; s++) {
-		    sum += input[r][s] * theta[s][c];
-		}
-
-		result[r][c] = sum;
-	    }
-	}
+	Matrix result = Matrix.crossProduct(input,theta);
 
 	return result;
     }
 
-    public static double[][] sigmoid (double[][] input)
+    public static Matrix sigmoid (Matrix input)
     {
-	double[][] result = new double[input.length][input[0].length];
+	Matrix res = new Matrix(input.rows(),input.columns());
 
-	for (int r = 0; r < input.length; r++) {
-	    for (int c = 0; c < input[r].length; c++) {
-		result[r][c] = 1 / (1 + Math.pow(Math.E, -1 * input[r][c]));
+	for (int r = 0; r < res.rows(); r++) {
+	    for (int c = 0; c < res.columns(); c++) {
+		res.set(r,c,1 / (1 + Math.pow(Math.E, -1 * input.get(r,c))));
 	    }
 	}
 
-	return result;
+	return res;
     }
 
-    public static double[][] addBias (double[][] input)
+    public static Matrix addBias (Matrix input)
     {
-	double[][] result = new double[input.length][input[0].length+1];
-	
-	for (int r = 0; r < input.length; r++) {
-	    for (int c = 0; c < input[0].length; c++) {
-		result[r][c+1] = input[r][c];
-	    }
-	}
-
-	for (int i = 0; i < input.length; i++) {
-	    result[i][0] = 1;
-	}
-
+	Matrix result = new Matrix(Matrix.ones(input.rows(),1),input,true);
 
 	return result;
     }
@@ -106,9 +82,9 @@ public class LinTrans
     {
 	String all = "";
 
-	for(int r = 0; r < theta.length; r++) {
-	    for(int c = 0; c < theta[r].length; c++) {
-		all += theta[r][c] + " ";
+	for(int r = 0; r < theta.rows(); r++) {
+	    for(int c = 0; c < theta.columns(); c++) {
+		all += theta.get(r,c) + " ";
 	    }
 	    all += "\n";
 	}
@@ -120,19 +96,20 @@ public class LinTrans
     {
 	/*
 	LinTrans lin = new LinTrans(4,4);
-	double[][] d = new double[][]{{1, 2, 3, 4}};
-	System.out.println(Arrays.deepToString(lin.transform(d)));
+	Matrix d = new Matrix(new double[][]{{1, 2, 3, 4}});
+	System.out.println(lin);
+	System.out.println(lin.transform(d));
 
-	System.out.println(Arrays.deepToString(sigmoid(new double[][]{{0,0}})));
+	System.out.println(sigmoid(new Matrix(new double[][]{{0,0}})));
 
-	System.out.println(Arrays.deepToString(addBias(new double[][]{{0,0},{1,2}})));
+	System.out.println(addBias(new Matrix(new double[][]{{0,0},{1,2}})));
 
-	System.out.println(Arrays.deepToString(lin.transSigBias(d)));
+	System.out.println(lin.transSigBias(d));
 	*/
 	LinTrans lin2 = new LinTrans(3,2,true);
-	double[][] d2 = new double[][]{{1,-1,2}};
-	System.out.println(lin2.theta.length);
-	System.out.println(d2[0].length);
-	System.out.println(Arrays.deepToString(lin2.transSigBias(d2)));
+	Matrix d2 = new Matrix(new double[][]{{1,-1,2}});
+	System.out.println(lin2.theta.rows());
+	System.out.println(d2.columns());
+	System.out.println(lin2.transSigBias(d2));
     }
 }

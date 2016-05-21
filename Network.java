@@ -31,9 +31,9 @@ public class Network {
 	}
     }
 
-    public double[][] propagate (double[][] inputs)
+    public Matrix propagate (Matrix inputs)
     {
-	double[][] result = inputs;
+	Matrix result = inputs;
 	
 	for (int i = 0; i < transformations.size(); i++) {
 	    result = transformations.get(i).transSigBias(result);
@@ -42,9 +42,9 @@ public class Network {
 	return result;
     }
 
-    public double[][] propagateWithoutBias(double[][] inputs)
+    public Matrix propagateWithoutBias(Matrix inputs)
     {
-	double[][] result = inputs;
+	Matrix result = inputs;
 
 	for (int i = 0; i < transformations.size(); i++) {
 	    result = transformations.get(i).transSig(result);
@@ -53,12 +53,17 @@ public class Network {
 	return result;
     }
 
+    public Matrix backpropagation (Matrix inputs, Matrix y, int layer)
+    {
+	return null;
+    }
+
     public static void main(String[] args)
     {
 	
 	Network n = new Network(new int[]{2,3,2}, true);
 
-	System.out.println(Arrays.deepToString(n.propagate(new double[][]{{1,2,-1}})));
+	System.out.println(n.propagate(new Matrix(new double[][]{{1,2,-1}})));
 
 	/*
 	ArrayList<double[][]> arr = new ArrayList<>();
