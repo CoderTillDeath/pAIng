@@ -95,6 +95,19 @@ public class Matrix
 	return new Matrix(mat);
     }
 
+    public Matrix removeRow(int x)
+    {
+	double[][] mat = new double[arr.length-1][arr[0].length];
+
+	for (int r = 0; r < mat.length; r++) {
+	    for (int c = 0; c < mat[0].length; c++) {
+		mat[r][c] = (r>=x)?arr[r+1][c]:arr[r][c];
+	    }
+	}
+
+	return new Matrix(mat);
+    }
+
     public Matrix removeColumn(int x)
     {
 	double[][] mat = new double[arr.length][arr[0].length-1];
