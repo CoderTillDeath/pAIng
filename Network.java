@@ -53,17 +53,49 @@ public class Network {
 	return result;
     }
 
-    public Matrix backpropagation (Matrix inputs, Matrix y, int layer)
+    public void backpropagation(Matrix inputs, Matrix y, int times)
     {
+	if(inputs.rows() != y.rows()) throw new ArithmeticException();
+
+	for (int t = 0; t < times; t++) {
+	    for (int r = 0; r < inputs.rows(); r++) {
+		backpropInput(inputs.row(r),y.row(r),0);
+	    }
+	}
+    }
+
+    public Matrix backpropInput (Matrix inputs, Matrix y, int layer)
+    {
+	if(layer == transformations.size())
+	{
+	    System.out.println(inputs.removeColumn(0));
+	    return Matrix.subtract(y,inputs.removeColumn(0));
+	}
+
+	LinTrans trans = transformations.get(layer);
+
+	Matrix result = trans.transSigBias(inputs); 
+
+	Matrix error = backpropInput(result,y,layer+1);
+
+	
+	
 	return null;
+    }
+
+    public double cost(Matrix inputs, Matrix y)
+    {
+	return 0;
     }
 
     public static void main(String[] args)
     {
 	
-	Network n = new Network(new int[]{2,3,2}, true);
+	Network n = new Network(new int[]{2,2,1}, true);
+	
+	Matrix m = new Matrix(new double[][]{{1,.35,.9}});
 
-	System.out.println(n.propagate(new Matrix(new double[][]{{1,2,-1}})));
+	n.backpropagation(m, new Matrix(new double[][]{{2}}), 1);
 
 	/*
 	ArrayList<double[][]> arr = new ArrayList<>();

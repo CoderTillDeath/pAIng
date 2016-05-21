@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Matrix
 {
     double[][] arr;
@@ -69,6 +71,41 @@ public class Matrix
     public int columns()
     {
 	return arr[0].length;
+    }
+
+    public Matrix row(int x)
+    {
+	double[][] mat = new double[1][arr[0].length];
+
+	for (int i = 0; i < arr[0].length; i++) {
+	    mat[0][i] = arr[x][i];
+	}
+	
+	return new Matrix(mat);
+    }
+
+    public Matrix column(int x)
+    {
+	double[][] mat = new double[arr.length][1];
+
+	for (int i = 0; i < arr.length; i++) {
+	    mat[i][0] = arr[i][x];
+	}
+
+	return new Matrix(mat);
+    }
+
+    public Matrix removeColumn(int x)
+    {
+	double[][] mat = new double[arr.length][arr[0].length-1];
+
+	for (int r = 0; r < mat.length; r++) {
+	    for (int c = 0; c < mat[0].length; c++) {
+		mat[r][c] = (c>=x)?arr[r][c+1]:arr[r][c];
+	    }
+	}
+
+	return new Matrix(mat);
     }
 
     public static Matrix ones(int rows, int columns)
@@ -171,5 +208,10 @@ public class Matrix
 	Matrix a2 = new Matrix(new double[][]{{.1,.4},{.8,.6}});
 
 	System.out.println(new Matrix(a1,a2,true));
+
+	System.out.println(a1.row(0));
+	System.out.println(a1.column(1));
+
+	System.out.println(a1.removeColumn(0));
     }
 }

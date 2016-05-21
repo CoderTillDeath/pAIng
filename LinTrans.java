@@ -45,6 +45,10 @@ public class LinTrans
 
     public Matrix transform(Matrix input)
     {
+	System.out.println("Multiply!");
+	System.out.println(input);
+	System.out.println(theta);
+	System.out.println();
 	if(input.columns() != theta.rows())
 	    throw new ArithmeticException();
 
