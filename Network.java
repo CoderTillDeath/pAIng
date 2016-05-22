@@ -78,18 +78,18 @@ public class Network {
 	return m;
     }
 
-    public void backpropagation(Matrix inputs, Matrix y, int times)
+    public void backpropagation(Matrix inputs, Matrix y, double lr, int times)
     {
 	if(inputs.rows() != y.rows()) throw new ArithmeticException();
 
 	for (int t = 0; t < times; t++) {
 	    for (int r = 0; r < inputs.rows(); r++) {
-		backpropInput(inputs.row(r),y.row(r),0);
+		backpropInput(inputs.row(r),y.row(r),lr,0);
 	    }
 	}
     }
 
-    public Matrix backpropInput (Matrix inputs, Matrix y, int layer)
+    public Matrix backpropInput (Matrix inputs, Matrix y, double lr, int layer)
     {
 	if(layer == transformations.size())
 	{
@@ -103,22 +103,40 @@ public class Network {
 
 	Matrix sigPrime = Matrix.mult(result,Matrix.sub(1,result));
 
-	Matrix error = Matrix.mult(backpropInput(LinTrans.addBias(result),y,layer+1),sigPrime);
+	Matrix error = Matrix.mult(backpropInput(LinTrans.addBias(result),y,lr,layer+1),sigPrime);
 
-	trans.theta = Matrix.add(trans.theta,Matrix.crossProduct(inputs.transpose(),error));
+	trans.theta = Matrix.add(trans.theta,Matrix.scale(Matrix.crossProduct(inputs.transpose(),error), lr));
 
 	Matrix m = Matrix.crossProduct(error,trans.theta.removeRow(0).transpose());
 	
 	return m;
     }
 
+    public double cost(Matrix inputs, Matrix y)
+    {
+	Matrix res = propagate(inputs);
+	double c = 0;
+	
+	for (int i = 0; i < res.rows(); i++) {
+	    for (int k = 0; k < res.columns(); k++) {
+		c += y.get(i,k) * Math.log(res.get(i,k)) + (1-y.get(i,k))*(Math.log(1 - res.get(i,k)));
+	    }
+	}
+
+	return c;
+    }
+
     public static void main(String[] args)
     {
-	Network n = new Network(new int[]{2,2,2}, true);
+	Network n = new Network(new int[]{2,2,1});
 
-	n.backpropagation(new Matrix(new double[][]{{1,1,-1}}), new Matrix(new double[][]{{.4,.5}}), 100);
+	Matrix X = new Matrix(new double[][]{{1,0,0},{1,0,1},{1,1,0},{1,1,1}});
+	Matrix y = new Matrix(new double[][]{{1},{0},{0},{1}});
 
-	System.out.println(n.propagate(new Matrix(new double[][]{{1,1,-1}})));
+	System.out.println(n.cost(X,y));
+	n.backpropagation(X, y, 2.5, 200);
+	System.out.println(n.cost(X,y));
+	System.out.println(n.propagate(new Matrix(new double[][]{{1,0,0}})));
 	
 	/*
 	ArrayList<double[][]> arr = new ArrayList<>();
