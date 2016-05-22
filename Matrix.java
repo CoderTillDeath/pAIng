@@ -196,7 +196,7 @@ public class Matrix
 	return res;
     }
     
-    public static Matrix scale(Matrix a1, int s)
+    public static Matrix scale(Matrix a1, double s)
     {
 	Matrix res = new Matrix(a1.rows(), a1.columns());
 
